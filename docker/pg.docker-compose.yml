@@ -1,0 +1,28 @@
+version: '3'
+services:
+  postgres:
+    container_name: pg-db
+    build:
+      context: .
+      dockerfile: ./dockerfiles/db.Dockerfile
+    volumes:
+      - pg:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - '5432:5432'
+    networks:
+      - pg
+
+networks:
+  default:
+    driver: bridge
+  pg:
+    driver: bridge
+
+volumes:
+  pg:
+    driver: local
+    driver_opts:
+       o: bind
+       type: none
+       device: /home/data/pg/
