@@ -144,7 +144,7 @@ class Api:
 
 
 if __name__ == '__main__':
-    API = Api('user', 'admin')
+    API = Api('xxx', 'xxx')
     CSV_ID = API.upload_csv(open('/home/urumchi/Desktop/ord.csv', 'rb'))
     print(CSV_ID)
     print(API.get_csvs())
