@@ -8,7 +8,7 @@ from fastapi import Depends
 from folium.plugins import HeatMap, MarkerCluster
 from starlette.responses import StreamingResponse
 
-from scripts.apps.general.shared.user import get_current_user
+from scripts.shared.user import get_current_user
 from scripts.models.api import MapReqPyd
 from scripts.models.enums import CsvTypes
 from scripts.models.pg import Map, CSVFile

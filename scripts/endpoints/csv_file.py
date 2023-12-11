@@ -6,10 +6,10 @@ from typing import Annotated, Dict, Optional
 from fastapi import Depends, UploadFile, File, HTTPException
 from starlette.responses import StreamingResponse
 
-from scripts.apps.general.endpoints.proceed import WeatherTable
-from scripts.apps.general.shared.user import get_current_user
+from scripts.endpoints.proceed import WeatherTable
+from scripts.shared.user import get_current_user
 from scripts.models.api import CSVFileReqPyd
-from scripts.models.pg import CSVFile, Map
+from scripts.models.pg import CSVFile
 from scripts.shared.lab_tools import PandasTable
 from scripts.shared.security import permission_setter
 
@@ -132,4 +132,3 @@ async def assign_tables_to_map(user: Annotated[Dict, Depends(permission_setter()
     user = await get_current_user(user)
     return await CSVFile.filter(user=user, csv_file_id__in=csv_ids).update(map_id=map_id)
 
-# c95f0c3c-51b3-445e-a39e-454584c2d9c8

@@ -1,22 +1,27 @@
+# get_csv_metas
 from pathlib import Path
 
 from starlette.staticfiles import StaticFiles
 
-from scripts.apps.general.endpoints.map import create_map, get_maps_meta, proceed_maps
-from scripts.apps.general.endpoints.csv_file import get_csv_metas, load_csv_file, get_csv_json, proceed_csv, \
-    get_proceed, assign_tables_to_map
-
-from scripts.apps.general.endpoints.ouauth import login_for_token, register
+from scripts.endpoints.csv_file import (
+    assign_tables_to_map,
+    load_csv_file,
+    get_csv_metas,
+    get_csv_json,
+    proceed_csv,
+    get_proceed,
+)
+from scripts.endpoints.map import get_maps_meta, create_map, proceed_maps
+from scripts.endpoints.ouauth import login_for_token, register
 from scripts.shared.api import (
-    Router,
-    Group,
     get_app,
+    Group,
+    Router,
     favicon_endpoint,
-    process_time_middleware,
     Mount,
+    process_time_middleware,
 )
 
-# get_csv_metas
 API = get_app(
     Router('get', 'favicon.ico', favicon_endpoint('static/favicon-32x32.png'), include=False),
     Group(
@@ -27,8 +32,8 @@ API = get_app(
     Group(
         Router('get', 'maps', get_maps_meta, include=True),
         Router('post', 'map', create_map, include=True),
-        Router('post', 'assign_tables_to_map', assign_tables_to_map, include=True),
-        Router('post', 'proceed_maps', proceed_maps, include=True),
+        Router('post', 'map/assign', assign_tables_to_map, include=True),
+        Router('post', 'map/assign/get', proceed_maps, include=True),
         tags=['map']
     ),
     Group(

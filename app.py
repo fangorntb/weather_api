@@ -5,7 +5,7 @@ from uvicorn import Server, Config
 from dotenv import load_dotenv
 from tortoise.contrib.fastapi import register_tortoise
 
-from scripts.apps import API
+from scripts.app import API
 
 load_dotenv('configs/.main.env')
 
