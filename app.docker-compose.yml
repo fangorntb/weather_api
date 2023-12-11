@@ -1,0 +1,8 @@
+version: '3'
+services:
+  app:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    command: python3 manage.py runserver

@@ -1,9 +1,8 @@
 import asyncio
 
-from fastapi import FastAPI
-from uvicorn import Server, Config
 from dotenv import load_dotenv
 from tortoise.contrib.fastapi import register_tortoise
+from uvicorn import Server, Config
 
 from scripts.app import API
 
