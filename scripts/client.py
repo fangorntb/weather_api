@@ -1,7 +1,10 @@
 import io
+import zipfile
 from functools import cached_property
 
 import requests
+from IPython.core.display import HTML
+from IPython.core.display_functions import display
 
 BASE_URL = 'http://89.104.68.100:8090'
 
@@ -14,8 +17,10 @@ class Api:
         self._access_token = access_token
 
     def register(self):
-        return requests.post(f'{BASE_URL}/api/register',
-                             data=dict(username=self.username, password=self.password, scopes=['user']))
+        return requests.post(
+            f'{BASE_URL}/api/register',
+            data=dict(username=self.username, password=self.password, scopes=['user'])
+        )
 
     def login(self):
         return requests.post(f'{BASE_URL}/api/token', data=dict(username=self.username, password=self.password, ))
@@ -95,6 +100,7 @@ class Api:
         with open(outfile, 'wb') as f:
             for chunk in data:
                 f.write(chunk)
+        return outfile
 
     def create_map(self, name: str = '', description: str = ''):
         return requests.post(
@@ -137,7 +143,17 @@ class Api:
         with open(outfile, 'wb') as f:
             for chunk in data:
                 f.write(chunk)
+        return outfile
 
+
+def display_html_from_zip(zip_file_path):
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        file_list = zip_ref.namelist()
+        for file_name in file_list:
+            if file_name.lower().endswith('.html'):
+                with zip_ref.open(file_name) as html_file:
+                    html_code = html_file.read().decode('utf-8')
+                    display(HTML(html_code))
 
 
 if __name__ == '__main__':
