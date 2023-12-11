@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-from scripts.models.pg import Map, CSVFile
+from scripts.models.pg import Map, CSVFile, BackgroundTask
 
 
 class Token(BaseModel):
@@ -16,3 +16,5 @@ CSVFileRespPyd = pydantic_model_creator(
     CSVFile,
     include=('id', 'user_id', 'date_created', 'latitude', 'longitude', 'type', 'description'),
 )
+
+BackgroundTaskResp = pydantic_model_creator(BackgroundTask, include=['id', 'meta'])

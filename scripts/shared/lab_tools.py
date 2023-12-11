@@ -109,7 +109,7 @@ class PandasTable:
     def __getitem__(self, item):
         return self.data[item]
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.data.to_csv(self.path_io)
 
     @property
@@ -131,6 +131,9 @@ class DateRepr:
 
     def __str__(self):
         return self.__repr__()
+
+    def __hash__(self):
+        return hash(self.__repr__())
 
 
 def get_decade_of_month(date: datetime) -> int:

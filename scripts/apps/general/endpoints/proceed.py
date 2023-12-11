@@ -1,4 +1,3 @@
-import dataclasses
 from contextlib import suppress
 from datetime import datetime
 from functools import cached_property
@@ -11,7 +10,6 @@ from scripts.shared.lab_tools import PandasTable, groupy_date
 
 
 class WeatherTable(PandasTable):
-
     @cached_property
     def need_cols(self):
         return 'YEAR,MO,DY,T2M,PRECTOTCORR,RH2M'.split(',')
@@ -31,11 +29,18 @@ class WeatherTable(PandasTable):
         return ord_df.data
 
     @cached_property
+    def groupby_year(self):
+        ord_df_group = self.ord_normal.copy()
+        return ord_df_group.groupby(
+            ord_df_group['DATE'].dt.year,
+        ).agg({'PRECTOTCORR': 'sum', 'T2M': 'mean'}).reset_index()
+
+    @cached_property
     def decades(self):
         ord_df = lab_tools.PandasTable(
             data=self.ord_normal.copy(),
         )
-        ord_df.data['DECADE'] = ord_df['DATE'].apply(lambda x: lab_tools.create_decade(x), )
+        ord_df.data['DECADE'] = ord_df['DATE'].apply(lambda x: f"{lab_tools.create_decade(x)}", )
         return ord_df.data
 
     @cached_property
@@ -43,7 +48,7 @@ class WeatherTable(PandasTable):
         ord_df = lab_tools.PandasTable(
             data=self.decades.copy()
         )
-        return ord_df.data.groupby(['DECADE']).aggregate({'T2M': 'mean', 'PRECTOTCORR': 'mean', 'RH2M': 'mean'})
+        return ord_df.data.groupby(['DECADE']).aggregate({'T2M': 'mean', 'PRECTOTCORR': 'sum', 'RH2M': 'mean'})
 
     def validate(self):
         passed = self.data.columns
@@ -61,7 +66,7 @@ class WeatherTable(PandasTable):
             lambda x: f'{x.year}/{x.month if x.month > 9 else "0" + str(x.month)}/01'
         )
         ord_df.data = ord_df.data.groupby(['DATE']).aggregate(
-            {'T2M': 'mean', 'PRECTOTCORR': 'sum', 'RH2M': 'sum'})
+            {'T2M': 'mean', 'PRECTOTCORR': 'sum', 'RH2M': 'mean'})
         return ord_df.data
 
     @cached_property
@@ -120,7 +125,7 @@ class WeatherTable(PandasTable):
         )
         em_df.data['DATE'] = em_df.data['DATE'].apply(lambda x: datetime.strptime(x, '%Y/%m/%d'), )
         groups = PandasTable(data=pd.DataFrame(), )
-        lab_tools.ds_view(em_df.data.head(1000))
+        # lab_tools.ds_view(em_df.data.head(1000))
 
         for _st, _end in (
                 (5, 6),
@@ -135,7 +140,7 @@ class WeatherTable(PandasTable):
                 end=_end,
                 # T2M='sum',
                 # RH2M='mean',
-                Em='mean',
+                Em='sum',
                 PRECTOTCORR='sum',
             )
             groups.data[gr.columns] = gr
@@ -144,7 +149,7 @@ class WeatherTable(PandasTable):
     @cached_property
     def ky(self):
         df = self.em_active_months.copy()
-        df_pr = self.active_months
+        df_pr = self.active_months.copy()
         df['Ky_5_6'] = df_pr['PRECTOTCORR_between_5_6_months'] / df['Em_between_5_6_months']
         df['Ky_5_7'] = df_pr['PRECTOTCORR_between_5_7_months'] / df['Em_between_5_7_months']
         df['Ky_5_8'] = df_pr['PRECTOTCORR_between_5_8_months'] / df['Em_between_5_8_months']
@@ -155,4 +160,4 @@ class WeatherTable(PandasTable):
 if __name__ == '__main__':
     weather = WeatherTable(path_io='/home/urumchi/py/analytics/ORD.csv')
     weather.load()
-    print(weather.ky)
+    print(weather.groupby_year)
